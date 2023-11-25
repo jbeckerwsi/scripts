@@ -2,6 +2,7 @@
 # import libraries
 import datetime
 import urllib.request as request
+import urllib.error
 from bs4 import BeautifulSoup
 import sys
 
@@ -13,7 +14,12 @@ if len(sys.argv) > 1 and sys.argv[1].isdigit():
 date=datetime.datetime.now()+datetime.timedelta(days=diff)
 quote_page = "https://www.studentenwerk-muenchen.de/mensa/speiseplan/speiseplan_" + date.strftime('%Y-%m-%d') + "_422_-de.html"
 # query the website and return the html to the variable page
-page = request.urlopen(quote_page)
+
+try:
+    page = request.urlopen(quote_page)
+except urllib.error.HTTPError as e:
+    print(f"No menu for {date.strftime('%Y-%m-%d')}")
+    sys.exit(1)
 # parse the html using beautiful soup and store in variable soup
 soup = BeautifulSoup(page, "html.parser")
 # Take out the <div> of name and get its value
